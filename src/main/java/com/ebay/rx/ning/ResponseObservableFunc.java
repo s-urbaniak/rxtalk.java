@@ -3,6 +3,8 @@ package com.ebay.rx.ning;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -14,6 +16,8 @@ public class ResponseObservableFunc implements Observable.OnSubscribeFunc<Respon
 
     private final AsyncHttpClient.BoundRequestBuilder builder;
 
+    private final static Logger log = LoggerFactory.getLogger(ResponseObservableFunc.class);
+
     public ResponseObservableFunc(AsyncHttpClient.BoundRequestBuilder builder) {
         this.builder = builder;
     }
@@ -21,6 +25,7 @@ public class ResponseObservableFunc implements Observable.OnSubscribeFunc<Respon
     @Override
     public Subscription onSubscribe(final Observer<? super Response> obs) {
         try {
+            log.info(obs + " subscribing to " + this);
             return Subscriptions.from(builder.execute(newAsyncHandler(obs)));
         } catch (IOException e) {
             throw new RuntimeException(e);

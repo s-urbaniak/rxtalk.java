@@ -20,46 +20,52 @@ import java.util.concurrent.ExecutionException;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-public class ObsTest {
+public class ObsTest7 {
+
+    @Test
+    public void testSync() throws IOException, ExecutionException, InterruptedException {
+        AsyncHttpClient client1 = new AsyncHttpClient();
+        List<String> result = new ArrayList<>(2);
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        result.add(client1.prepareGet("http://localhost:6060/obs1?it=5&delay=100").execute().get().getResponseBody());
+        result.add(client1.prepareGet("http://localhost:6060/obs2?it=5&delay=100").execute().get().getResponseBody());
+
+        System.out.println(stopwatch.stop().elapsed(MILLISECONDS) + " | " + result);
+    }
 
     @Test
     public void testAsyncNing() throws IOException {
         AsyncHttpClient client = new AsyncHttpClient();
-        Observable<String> obs1 = NingObservable.create(client.prepareGet("http://localhost:8080/4/obs1"))
+        Observable<String> obs1 = NingObservable.create(client.prepareGet("http://localhost:6060/obs1?it=5&delay=100"))
                 .map(Responses.toString);
 
-        Observable<String> obs2 = NingObservable.create(client.prepareGet("http://localhost:8080/4/obs2"))
+        Observable<String> obs2 = NingObservable.create(client.prepareGet("http://localhost:6060/obs2?it=5&delay=100"))
                 .map(Responses.toString);
 
         Observable<String> bodies = Observable
                 .merge(obs1, obs2)
                 .map(StringDecorators.threadName);
 
-        bodies.subscribe(Actions.sout);
-
         Stopwatch stopwatch = Stopwatch.createStarted();
-        bodies.toList().toBlockingObservable().single();
+        bodies.toBlockingObservable().forEach(Actions.sout);
         System.out.println(stopwatch.stop().elapsed(MILLISECONDS));
     }
 
     @Test
     public void testAsyncNingChunked() throws IOException {
         AsyncHttpClient client = new AsyncHttpClient();
-        Observable<String> obs1 = NingObservable.createChunked(client.prepareGet("http://localhost:8080/4/obs1"))
+        Observable<String> obs1 = NingObservable.createChunked(client.prepareGet("http://localhost:6060/obs1?it=5&delay=100"))
                 .map(HttpResponseBodyParts.toString);
 
-        Observable<String> obs2 = NingObservable.createChunked(client.prepareGet("http://localhost:8080/4/obs2"))
+        Observable<String> obs2 = NingObservable.createChunked(client.prepareGet("http://localhost:6060/obs2?it=5&delay=100"))
                 .map(HttpResponseBodyParts.toString);
 
         Observable<String> bodies = Observable
                 .merge(obs1, obs2)
                 .map(StringDecorators.threadName);
 
-        bodies.subscribe(Actions.sout);
-
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        bodies.toList().toBlockingObservable().single();
-        System.out.println(stopwatch.stop().elapsed(MILLISECONDS));
+        bodies.toBlockingObservable().forEach(Actions.sout);
     }
 
     @Test
@@ -68,12 +74,12 @@ public class ObsTest {
         client.start();
 
         Observable<String> obs1 = ObservableHttp
-                .createRequest(HttpAsyncMethods.createGet("http://localhost:8080/4/obs1"), client)
+                .createRequest(HttpAsyncMethods.createGet("http://localhost:6060/obs1?it=5&delay=100&nl"), client)
                 .toObservable()
                 .flatMap(ObservableHttpResponses.toString);
 
         Observable<String> obs2 = ObservableHttp
-                .createRequest(HttpAsyncMethods.createGet("http://localhost:8080/4/obs2"), client)
+                .createRequest(HttpAsyncMethods.createGet("http://localhost:6060/obs1?it=5&delay=100&nl"), client)
                 .toObservable()
                 .flatMap(ObservableHttpResponses.toString);
 
@@ -81,22 +87,6 @@ public class ObsTest {
                 .merge(obs1, obs2)
                 .map(StringDecorators.threadName);
 
-        bodies.subscribe(Actions.sout);
-
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        List<String> result = bodies.toList().toBlockingObservable().single();
-        System.out.println(stopwatch.stop().elapsed(MILLISECONDS) + " | " + result);
-    }
-
-    @Test
-    public void testSync() throws IOException, ExecutionException, InterruptedException {
-        AsyncHttpClient client1 = new AsyncHttpClient();
-        List<String> result = new ArrayList<>(2);
-
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        result.add(client1.prepareGet("http://localhost:8080/1/obs1").execute().get().getResponseBody());
-        result.add(client1.prepareGet("http://localhost:8080/1/obs2").execute().get().getResponseBody());
-
-        System.out.println(stopwatch.stop().elapsed(MILLISECONDS) + " | " + result);
+        bodies.toBlockingObservable().forEach(Actions.sout);
     }
 }
