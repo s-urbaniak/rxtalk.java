@@ -7,7 +7,7 @@ import rx.subscriptions.Subscriptions;
 
 public class ObsPlayground {
     @Test
-    public void testMe() {
+    public void testMe() throws InterruptedException {
         Observable<Integer> obs = Observable.create(observer -> {
             System.out.println("Subscribed on " + Thread.currentThread().getName());
             observer.onNext(1);
@@ -17,10 +17,11 @@ public class ObsPlayground {
             return Subscriptions.empty();
         });
 
-        Observable<Integer> o2 = obs.subscribeOn(Schedulers.io()).observeOn(Schedulers.newThread());
+        Observable<Integer> o2 = obs
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.newThread());
 
         o2.subscribe((s) -> System.out.println(s + " observed on " + Thread.currentThread().getName()));
-
-        o2.toList().toBlockingObservable().single();
+        Thread.sleep(100);
     }
 }

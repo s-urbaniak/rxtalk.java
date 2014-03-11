@@ -34,7 +34,7 @@ public class ObsTest8 {
         AsyncHttpClient client = new AsyncHttpClient();
 
         Observable<String> bodies = NingObservable
-                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=10&delay=300"))
+                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=20&delay=250"))
                 .map(HttpResponseBodyParts.toString)
                 .flatMap((b) -> Observable.from(Lists.newArrayList(b, b.replaceAll("obs1", "###"))))
                 .take(2, TimeUnit.SECONDS);
@@ -47,7 +47,7 @@ public class ObsTest8 {
         AsyncHttpClient client = new AsyncHttpClient();
 
         Observable<Integer> obs = NingObservable
-                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=9&delay=300"))
+                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=20&delay=300&jitter=600"))
                 .buffer(1, TimeUnit.SECONDS)
                 .map((l) -> l.size());
 
@@ -59,7 +59,7 @@ public class ObsTest8 {
         AsyncHttpClient client = new AsyncHttpClient();
 
         Observable<String> obs = NingObservable
-                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=9&delay=300"))
+                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=10&delay=300&jitter=100"))
                 .throttleWithTimeout(300, TimeUnit.MILLISECONDS)
                 .map(HttpResponseBodyParts.toString);
 
@@ -78,10 +78,36 @@ public class ObsTest8 {
                 .createChunked(client.prepareGet("http://localhost:6060/obs1?it=4&delay=300"))
                 .map(HttpResponseBodyParts.toString);
 
-        Observable<String> zipped = Observable.zip(obs1, obs2, (s1, s2) -> s1 + "|" + s2);
-//        Observable<String> zipped = Observable.combineLatest(obs1, obs2, (s1, s2) -> s1 + "|" + s2);
+//        Observable<String> zipped = Observable.zip(obs1, obs2, (s1, s2) -> s1 + "|" + s2);
+        Observable<String> zipped = Observable.combineLatest(obs1, obs2, (s1, s2) -> s1 + "|" + s2);
 
         zipped.toBlockingObservable().forEach(Actions.sout);
+    }
+
+    @Test
+    public void testGroupBy() {
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        Observable<String> obs1 = NingObservable
+                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=10&delay=100"))
+                .map(HttpResponseBodyParts.toString);
+
+        Observable<String> obs2 = NingObservable
+                .createChunked(client.prepareGet("http://localhost:6060/obs2?it=5&delay=1000"))
+                .map(HttpResponseBodyParts.toString);
+
+        Observable<String> obs = Observable
+                .merge(obs1, obs2)
+                .groupBy((s) -> Integer.parseInt(s.substring(s.length() - 1, s.length())))
+                .flatMap((g) -> {
+                    if (g.getKey() % 2 == 0) {
+                        return g.map((s) -> "even " + s);
+                    } else {
+                        return g.map((s) -> "odd " + s);
+                    }
+                });
+
+        obs.toBlockingObservable().forEach(Actions.sout);
     }
 
     @Test
@@ -89,7 +115,7 @@ public class ObsTest8 {
         AsyncHttpClient client = new AsyncHttpClient();
 
         Observable<HttpResponseBodyPart> obs = NingObservable
-                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=9&delay=300"));
+                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=9&delay=300&jitter=300"));
 
         Observable<String> s = obs.map(HttpResponseBodyParts.toString);
         Observable<Integer> m = obs.buffer(1, TimeUnit.SECONDS).map((l) -> l.size());
@@ -103,7 +129,7 @@ public class ObsTest8 {
         AsyncHttpClient client = new AsyncHttpClient();
 
         ConnectableObservable<HttpResponseBodyPart> obs = NingObservable
-                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=9&delay=300"))
+                .createChunked(client.prepareGet("http://localhost:6060/obs1?it=9&delay=300&jitter=300"))
                 .publish();
 
         Observable<String> s = obs.map(HttpResponseBodyParts.toString);
