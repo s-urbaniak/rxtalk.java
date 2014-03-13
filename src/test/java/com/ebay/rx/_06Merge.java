@@ -8,6 +8,7 @@ import org.junit.Test;
 import rx.Observable;
 
 public class _06Merge {
+
     @Test
     public void testMerge() {
         AsyncHttpClient client = new AsyncHttpClient();
@@ -16,7 +17,7 @@ public class _06Merge {
                 .createChunked(client.prepareGet("http://localhost:6060/obs1?it=10&delay=200&jitter=2000"));
 
         Observable<HttpResponseBodyPart> obs2 = NingObservable
-                .createChunked(client.prepareGet("http://localhost:6060/obs2?it=10&delay=200&jitter=2000"));
+                .createChunked(client.prepareGet("http://localhost:6061/obs2?it=10&delay=200&jitter=2000"));
 
         Observable<String> bodies = Observable
                 .merge(obs1, obs2)
@@ -25,4 +26,5 @@ public class _06Merge {
 
         bodies.toBlockingObservable().forEach(Actions.sout);
     }
+
 }

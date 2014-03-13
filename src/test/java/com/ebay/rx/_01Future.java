@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class _01Future {
+
     @Test
     public void testSync() throws IOException, ExecutionException, InterruptedException {
         AsyncHttpClient client1 = new AsyncHttpClient();
@@ -22,4 +23,5 @@ public class _01Future {
         result.add(client1.prepareGet("http://localhost:6060/obs2?it=5&delay=100&nl").execute().get().getResponseBody());
         System.out.println(stopwatch.stop().elapsed(MILLISECONDS) + " | " + result);
     }
+
 }

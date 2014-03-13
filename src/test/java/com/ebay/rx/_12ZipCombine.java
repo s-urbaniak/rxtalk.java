@@ -7,6 +7,7 @@ import org.junit.Test;
 import rx.Observable;
 
 public class _12ZipCombine {
+
     @Test
     public void testZip() throws InterruptedException {
         AsyncHttpClient client = new AsyncHttpClient();
@@ -40,4 +41,5 @@ public class _12ZipCombine {
 
         zipped.toBlockingObservable().forEach(Actions.sout);
     }
+
 }

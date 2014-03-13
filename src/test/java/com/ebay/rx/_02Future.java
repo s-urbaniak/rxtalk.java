@@ -14,6 +14,7 @@ import java.util.concurrent.Future;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class _02Future {
+
     @Test
     public void testSyncBetter() throws IOException, ExecutionException, InterruptedException {
         AsyncHttpClient client1 = new AsyncHttpClient();
@@ -28,4 +29,5 @@ public class _02Future {
 
         System.out.println(stopwatch.stop().elapsed(MILLISECONDS) + " | " + result);
     }
+
 }

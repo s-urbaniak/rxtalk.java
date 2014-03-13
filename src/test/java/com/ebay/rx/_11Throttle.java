@@ -16,7 +16,7 @@ public class _11Throttle {
 
         Observable<String> obs = NingObservable
                 .createChunked(client.prepareGet("http://localhost:6060/obs1?it=20&delay=20"))
-                .throttleFirst(40, TimeUnit.MILLISECONDS)
+                .throttleFirst(50, TimeUnit.MILLISECONDS)
                 .map(HttpResponseBodyParts.toString);
 
         obs.toBlockingObservable().forEach(Actions.sout);
@@ -28,7 +28,7 @@ public class _11Throttle {
 
         Observable<String> obs = NingObservable
                 .createChunked(client.prepareGet("http://localhost:6060/obs1?it=20&delay=20"))
-                .throttleLast(40, TimeUnit.MILLISECONDS)
+                .throttleLast(50, TimeUnit.MILLISECONDS)
                 .map(HttpResponseBodyParts.toString);
 
         obs.toBlockingObservable().forEach(Actions.sout);

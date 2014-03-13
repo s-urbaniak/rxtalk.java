@@ -10,6 +10,7 @@ import rx.Observable;
 import java.io.IOException;
 
 public class _04ResponseObservableSout {
+
     @Test
     public void testAsyncNing() throws IOException {
         AsyncHttpClient client = new AsyncHttpClient();
@@ -20,4 +21,5 @@ public class _04ResponseObservableSout {
         String body = bodies.toBlockingObservable().first();
         System.out.println(body);
     }
+
 }

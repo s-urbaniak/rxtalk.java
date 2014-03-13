@@ -36,7 +36,6 @@ public class _03_Whoops_ResponseObservableFunc {
         AsyncHttpClient client = new AsyncHttpClient();
 
         Observable<Response> obs = NingObservable.create(client.prepareGet("http://localhost:6060/obs1?it=1&delay=1"));
-
         obs.subscribe(newObserver());
     }
 

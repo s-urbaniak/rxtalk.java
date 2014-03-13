@@ -12,9 +12,9 @@ public final class SlowServerObserver implements Observer<String> {
 
     private final AsyncContext ctx;
 
-    public SlowServerObserver(AsyncContext ctx) throws IOException {
+    public SlowServerObserver(AsyncContext ctx, PrintWriter writer) {
         this.ctx = ctx;
-        this.writer = ctx.getResponse().getWriter();
+        this.writer = writer;
     }
 
     @Override
@@ -36,11 +36,12 @@ public final class SlowServerObserver implements Observer<String> {
     public void onCompleted() {
         writer.println("<div>Finishing thread: " + Thread.currentThread().getName() + "</div>");
         writer.println("</body></html>");
+
         ctx.complete();
     }
 
     public static SlowServerObserver fromContext(AsyncContext ctx) throws IOException {
-        return new SlowServerObserver(ctx);
+        return new SlowServerObserver(ctx, ctx.getResponse().getWriter());
     }
 
 }
