@@ -1,5 +1,6 @@
 package com.ebay.rx.apache;
 
+import com.ebay.rx.StringFunctions;
 import rx.Observable;
 import rx.apache.http.ObservableHttpResponse;
 import rx.util.functions.Func1;
@@ -8,15 +9,17 @@ public final class ObservableHttpResponses {
     private ObservableHttpResponses() {
     }
 
-    public static Func1<ObservableHttpResponse, Observable<String>> toString = new Func1<ObservableHttpResponse, Observable<String>>() {
+    public static Func1<ObservableHttpResponse, Observable<byte[]>> toContent = new Func1<ObservableHttpResponse, Observable<byte[]>>() {
         @Override
-        public Observable<String> call(ObservableHttpResponse resp) {
-            return resp.getContent().map(new Func1<byte[], String>() {
-                @Override
-                public String call(byte[] bytes) {
-                    return new String(bytes);
-                }
-            });
+        public Observable<byte[]> call(ObservableHttpResponse response) {
+            return response.getContent();
+        }
+    };
+
+    public static Func1<Observable<byte[]>, Observable<String>> toString = new Func1<Observable<byte[]>, Observable<String>>() {
+        @Override
+        public Observable<String> call(Observable<byte[]> observable) {
+            return observable.map(StringFunctions.byteArrayToString);
         }
     };
 }

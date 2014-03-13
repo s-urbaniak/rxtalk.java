@@ -1,6 +1,6 @@
 package org.urbasoft.async;
 
-import com.ebay.rx.StringDecorators;
+import com.ebay.rx.StringFunctions;
 import com.ebay.rx.ning.HttpResponseBodyParts;
 import com.ebay.rx.ning.NingObservable;
 import com.ning.http.client.AsyncHttpClient;
@@ -28,7 +28,7 @@ public class HelloServlet extends HttpServlet {
 
         Observable<String> bodies = Observable
                 .mergeDelayError(obs1, obs2)
-                .map(StringDecorators.threadName);
+                .map(StringFunctions.decorateWithThreadName);
 
         res.getWriter().println("<html><body>");
         res.getWriter().println("<div>Starting thread: " + Thread.currentThread().getName() + "</div>");

@@ -1,5 +1,6 @@
 package com.ebay.rx.ning;
 
+import com.google.common.base.Preconditions;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.HttpResponseBodyPart;
@@ -34,6 +35,8 @@ public class ChunkedObservableFunc implements Observable.OnSubscribeFunc<HttpRes
     }
 
     private AsyncCompletionHandler<Response> newAsyncHandler(final Observer<? super HttpResponseBodyPart> obs) {
+        Preconditions.checkNotNull(obs);
+
         return new AsyncCompletionHandler<Response>() {
             @Override
             public STATE onBodyPartReceived(HttpResponseBodyPart content) throws Exception {

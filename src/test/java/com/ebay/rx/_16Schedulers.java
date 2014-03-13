@@ -5,7 +5,8 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-public class ObsPlayground {
+public class _16Schedulers {
+
     @Test
     public void testMe() throws InterruptedException {
         Observable<Integer> obs = Observable.create(observer -> {
@@ -22,6 +23,8 @@ public class ObsPlayground {
                 .observeOn(Schedulers.newThread());
 
         o2.subscribe((s) -> System.out.println(s + " observed on " + Thread.currentThread().getName()));
+
         Thread.sleep(100);
     }
+
 }
